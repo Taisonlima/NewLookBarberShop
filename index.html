@@ -32,9 +32,10 @@
     font-size: 16px;
   }
 
-  input[type="text"] {
+  input[type="text"], input[type="password"] {
     width: 60%;
-    margin-right: 10px;
+    margin: 5px auto;
+    display: block;
   }
 
   button {
@@ -45,10 +46,6 @@
     background-color: #f4d03f;
     color: #000;
     font-weight: bold;
-  }
-
-  #loginSection {
-    margin-top: 30px;
   }
 
   #fila {
@@ -93,7 +90,7 @@
 
   <div>
     <input id="nomeCliente" type="text" placeholder="Digite seu nome para entrar na fila" />
-    <button id="addBtn">Entrar</button>
+    <button id="addBtn">Entrar na fila</button>
   </div>
 
   <div id="fila"></div>
@@ -109,85 +106,86 @@
     © 2026 New Look Barber Shop — Todos os direitos reservados.
   </footer>
 
-  <script>
-    const addBtn = document.getElementById('addBtn');
-    const filaDiv = document.getElementById('fila');
-    const entrarBtn = document.getElementById('entrarBtn');
-    const senhaInput = document.getElementById('senha');
+  <script type="module">
+    // Importando Firebase (v10+)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    // Suas credenciais do Firebase
+    const firebaseConfig = { 
+      apiKey: "AIzaSyAOR0CZ3mFYSMIGGKheFUecnL16_UYDiuo",
+      authDomain: "newlook-barbershop.firebaseapp.com",
+      databaseURL: "https://newlook-barbershop-default-rtdb.firebaseio.com",
+      projectId: "newlook-barbershop",
+      storageBucket: "newlook-barbershop.firebasestorage.app",
+      messagingSenderId: "358844729550",
+      appId: "1:358844729550:web:81f7f4d47a499d9edaa89f",
+      measurementId: "G-QVHRMRGQEN"
+    };
+
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const filaRef = ref(db, "fila");
 
     let barbeiroAtivo = false;
 
-    // Fila global salva no navegador
-    let fila = JSON.parse(localStorage.getItem('fila')) || [];
+    const filaDiv = document.getElementById("fila");
+    const addBtn = document.getElementById("addBtn");
+    const entrarBtn = document.getElementById("entrarBtn");
 
-    // Salvar fila no armazenamento local
-    function salvarFila() {
-      localStorage.setItem('fila', JSON.stringify(fila));
-    }
+    // Mostrar fila em tempo real
+    onValue(filaRef, (snapshot) => {
+      const data = snapshot.val();
+      filaDiv.innerHTML = "<h2>Fila de Espera</h2>";
 
-    // Atualizar visual da fila
-    function atualizarFila() {
-      filaDiv.innerHTML = '<h2>Fila de Espera</h2>';
-      fila.forEach((nome, index) => {
-        const clienteDiv = document.createElement('div');
-        clienteDiv.className = 'cliente';
+      if (!data) {
+        filaDiv.innerHTML += "<p>Nenhum cliente na fila.</p>";
+        return;
+      }
+
+      const clientes = Object.entries(data);
+      clientes.forEach(([id, nome], index) => {
+        const clienteDiv = document.createElement("div");
+        clienteDiv.className = "cliente";
         clienteDiv.innerHTML = `<span>${index + 1}. ${nome}</span>`;
 
-        const btn = document.createElement('button');
-        btn.className = 'btnConcluir';
-        btn.textContent = 'Concluir';
+        const btn = document.createElement("button");
+        btn.className = "btnConcluir";
+        btn.textContent = "Concluir";
 
-        // O botão só aparece se o barbeiro estiver logado
         if (barbeiroAtivo) {
-          btn.style.display = 'inline-block';
-          btn.onclick = () => {
-            fila.splice(index, 1);
-            salvarFila();
-            atualizarFila();
-          };
+          btn.style.display = "inline-block";
+          btn.onclick = () => remove(ref(db, "fila/" + id));
         }
 
         clienteDiv.appendChild(btn);
         filaDiv.appendChild(clienteDiv);
       });
+    });
 
-      if (fila.length === 0) {
-        filaDiv.innerHTML += '<p>Nenhum cliente na fila.</p>';
-      }
-    }
-
-    // Cliente adiciona o nome
+    // Adicionar cliente à fila
     addBtn.onclick = () => {
-      const nome = document.getElementById('nomeCliente').value.trim();
+      const nome = document.getElementById("nomeCliente").value.trim();
       if (nome) {
-        fila.push(nome);
-        salvarFila();
-        document.getElementById('nomeCliente').value = '';
-        atualizarFila();
+        push(filaRef, nome);
+        alert("Você entrou na fila! Aguarde seu atendimento 🧔✂️");
+        document.getElementById("nomeCliente").value = "";
       } else {
-        alert('Por favor, digite seu nome.');
+        alert("Por favor, digite seu nome.");
       }
     };
 
-    // Barbeiro entra com a senha
+    // Ativar modo barbeiro
     entrarBtn.onclick = () => {
-      if (senhaInput.value === '0123') {
+      const senha = document.getElementById("senha").value.trim();
+      if (senha === "0123") {
         barbeiroAtivo = true;
-        atualizarFila();
-        alert('Modo barbeiro ativado!');
+        alert("Modo barbeiro ativado!");
       } else {
-        alert('Senha incorreta!');
+        alert("Senha incorreta!");
       }
     };
-
-    // Atualiza a fila ao carregar a página
-    atualizarFila();
-
-    // Atualiza automaticamente a fila a cada 2 segundos (para ver novos clientes)
-    setInterval(() => {
-      fila = JSON.parse(localStorage.getItem('fila')) || [];
-      atualizarFila();
-    }, 2000);
   </script>
 </body>
 </html>

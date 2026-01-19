@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Look Barber Shop</title>
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #000, #2c2c2c);
+    color: #f4d03f;
+    text-align: center;
+    padding: 40px;
+  }
+  h1 {
+    color: #f4d03f;
+    margin-bottom: 20px;
+  }
+  input, button {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  input[type="text"] {
+    width: 60%;
+    margin-right: 10px;
+  }
+  button {
+    cursor: pointer;
+  }
+  #addBtn {
+    background-color: #f4d03f;
+    color: #000;
+  }
+  #loginSection {
+    margin-top: 30px;
+  }
+  #fila {
+    margin-top: 30px;
+    background: rgba(255,255,255,0.05);
+    padding: 20px;
+    border-radius: 10px;
+  }
+  .cliente {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .btnConcluir {
+    background: #f4d03f;
+    color: #000;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: none;
+  }
+</style>
+</head>
+<body>
+  <h1>💈 New Look Barber Shop 💈</h1>
+
+  <div>
+    <input id="nomeCliente" type="text" placeholder="Digite seu nome para entrar na fila" />
+    <button id="addBtn">Entrar</button>
+  </div>
+
+  <div id="fila"></div>
+
+  <div id="loginSection">
+    <h3>Área do Barbeiro</h3>
+    <input id="senha" type="password" placeholder="Digite a senha" />
+    <button id="entrarBtn">Entrar</button>
+  </div>
+
+  <script>
+    const addBtn = document.getElementById('addBtn');
+    const filaDiv = document.getElementById('fila');
+    const entrarBtn = document.getElementById('entrarBtn');
+    const senhaInput = document.getElementById('senha');
+
+    let barbeiroAtivo = false;
+    let fila = [];
+
+    function atualizarFila() {
+      filaDiv.innerHTML = '<h2>Fila de Espera</h2>';
+      fila.forEach((nome, index) => {
+        const clienteDiv = document.createElement('div');
+        clienteDiv.className = 'cliente';
+        clienteDiv.innerHTML = `<span>${index + 1}. ${nome}</span>`;
+        const btn = document.createElement('button');
+        btn.className = 'btnConcluir';
+        btn.textContent = 'Concluir';
+        if (barbeiroAtivo) btn.style.display = 'inline-block';
+        btn.onclick = () => {
+          fila.splice(index, 1);
+          atualizarFila();
+        };
+        clienteDiv.appendChild(btn);
+        filaDiv.appendChild(clienteDiv);
+      });
+      if (fila.length === 0) filaDiv.innerHTML += '<p>Nenhum cliente na fila.</p>';
+    }
+
+    addBtn.onclick = () => {
+      const nome = document.getElementById('nomeCliente').value.trim();
+      if (nome) {
+        fila.push(nome);
+        document.getElementById('nomeCliente').value = '';
+        atualizarFila();
+      }
+    };
+
+    entrarBtn.onclick = () => {
+      if (senhaInput.value === '0123') {
+        barbeiroAtivo = true;
+        atualizarFila();
+        alert('Modo barbeiro ativado!');
+      } else {
+        alert('Senha incorreta!');
+      }
+    };
+
+    atualizarFila();
+  </script>
+</body>
+</html>

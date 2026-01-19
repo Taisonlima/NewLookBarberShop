@@ -116,7 +116,11 @@
     const senhaInput = document.getElementById('senha');
 
     let barbeiroAtivo = false;
-    let fila = [];
+    let fila = JSON.parse(localStorage.getItem('fila')) || [];
+
+    function salvarFila() {
+      localStorage.setItem('fila', JSON.stringify(fila));
+    }
 
     function atualizarFila() {
       filaDiv.innerHTML = '<h2>Fila de Espera</h2>';
@@ -129,8 +133,13 @@
         btn.textContent = 'Concluir';
         if (barbeiroAtivo) btn.style.display = 'inline-block';
         btn.onclick = () => {
-          fila.splice(index, 1);
-          atualizarFila();
+          if (barbeiroAtivo) {
+            fila.splice(index, 1);
+            salvarFila();
+            atualizarFila();
+          } else {
+            alert('Somente o barbeiro pode concluir!');
+          }
         };
         clienteDiv.appendChild(btn);
         filaDiv.appendChild(clienteDiv);
@@ -142,6 +151,7 @@
       const nome = document.getElementById('nomeCliente').value.trim();
       if (nome) {
         fila.push(nome);
+        salvarFila();
         document.getElementById('nomeCliente').value = '';
         atualizarFila();
       }

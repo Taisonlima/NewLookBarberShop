@@ -116,37 +116,47 @@
     const senhaInput = document.getElementById('senha');
 
     let barbeiroAtivo = false;
+
+    // Fila global salva no navegador
     let fila = JSON.parse(localStorage.getItem('fila')) || [];
 
+    // Salvar fila no armazenamento local
     function salvarFila() {
       localStorage.setItem('fila', JSON.stringify(fila));
     }
 
+    // Atualizar visual da fila
     function atualizarFila() {
       filaDiv.innerHTML = '<h2>Fila de Espera</h2>';
       fila.forEach((nome, index) => {
         const clienteDiv = document.createElement('div');
         clienteDiv.className = 'cliente';
         clienteDiv.innerHTML = `<span>${index + 1}. ${nome}</span>`;
+
         const btn = document.createElement('button');
         btn.className = 'btnConcluir';
         btn.textContent = 'Concluir';
-        if (barbeiroAtivo) btn.style.display = 'inline-block';
-        btn.onclick = () => {
-          if (barbeiroAtivo) {
+
+        // O botão só aparece se o barbeiro estiver logado
+        if (barbeiroAtivo) {
+          btn.style.display = 'inline-block';
+          btn.onclick = () => {
             fila.splice(index, 1);
             salvarFila();
             atualizarFila();
-          } else {
-            alert('Somente o barbeiro pode concluir!');
-          }
-        };
+          };
+        }
+
         clienteDiv.appendChild(btn);
         filaDiv.appendChild(clienteDiv);
       });
-      if (fila.length === 0) filaDiv.innerHTML += '<p>Nenhum cliente na fila.</p>';
+
+      if (fila.length === 0) {
+        filaDiv.innerHTML += '<p>Nenhum cliente na fila.</p>';
+      }
     }
 
+    // Cliente adiciona o nome
     addBtn.onclick = () => {
       const nome = document.getElementById('nomeCliente').value.trim();
       if (nome) {
@@ -154,9 +164,12 @@
         salvarFila();
         document.getElementById('nomeCliente').value = '';
         atualizarFila();
+      } else {
+        alert('Por favor, digite seu nome.');
       }
     };
 
+    // Barbeiro entra com a senha
     entrarBtn.onclick = () => {
       if (senhaInput.value === '0123') {
         barbeiroAtivo = true;
@@ -167,7 +180,14 @@
       }
     };
 
+    // Atualiza a fila ao carregar a página
     atualizarFila();
+
+    // Atualiza automaticamente a fila a cada 2 segundos (para ver novos clientes)
+    setInterval(() => {
+      fila = JSON.parse(localStorage.getItem('fila')) || [];
+      atualizarFila();
+    }, 2000);
   </script>
 </body>
 </html>

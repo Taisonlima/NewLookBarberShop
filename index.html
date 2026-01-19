@@ -12,36 +12,52 @@
     text-align: center;
     padding: 40px;
   }
+
   h1 {
+    font-size: 2.2em;
     color: #f4d03f;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
   }
+
+  .subtext {
+    color: #fefefe;
+    font-size: 1.1em;
+    margin-bottom: 30px;
+  }
+
   input, button {
     padding: 10px;
     border: none;
     border-radius: 5px;
     font-size: 16px;
   }
+
   input[type="text"] {
     width: 60%;
     margin-right: 10px;
   }
+
   button {
     cursor: pointer;
   }
+
   #addBtn {
     background-color: #f4d03f;
     color: #000;
+    font-weight: bold;
   }
+
   #loginSection {
     margin-top: 30px;
   }
+
   #fila {
     margin-top: 30px;
     background: rgba(255,255,255,0.05);
     padding: 20px;
     border-radius: 10px;
   }
+
   .cliente {
     display: flex;
     justify-content: space-between;
@@ -49,6 +65,7 @@
     padding: 10px;
     border-bottom: 1px solid rgba(255,255,255,0.1);
   }
+
   .btnConcluir {
     background: #f4d03f;
     color: #000;
@@ -58,10 +75,21 @@
     cursor: pointer;
     display: none;
   }
+
+  footer {
+    margin-top: 40px;
+    color: #ccc;
+    font-size: 0.9em;
+  }
 </style>
 </head>
 <body>
-  <h1>💈 New Look Barber Shop 💈</h1>
+
+  <h1>New Look Barber Shop 💈</h1>
+  <p class="subtext">
+    “Estilo, precisão e atitude. Aqui o corte é arte — bem-vindo à New Look Barber Shop.”<br>
+    “Cabelo no estilo, barba na régua. Sua transformação começa aqui.”
+  </p>
 
   <div>
     <input id="nomeCliente" type="text" placeholder="Digite seu nome para entrar na fila" />
@@ -75,6 +103,11 @@
     <input id="senha" type="password" placeholder="Digite a senha" />
     <button id="entrarBtn">Entrar</button>
   </div>
+
+  <footer>
+    📍 R. Vicência Francisca – São Caetano, próximo à quadra de São Caetano<br>
+    © 2026 New Look Barber Shop — Todos os direitos reservados.
+  </footer>
 
   <script>
     const addBtn = document.getElementById('addBtn');
